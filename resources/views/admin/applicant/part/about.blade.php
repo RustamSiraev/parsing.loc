@@ -1,6 +1,6 @@
 <div class="tab-pane fade show @if(!isset($statement)){{'active'}}@endif" id="about" role="tabpanel" aria-labelledby="about-tab">
     <form>
-        <div class="user-add-form">
+        <div class="search-form">
             <div class="row">
                 <div class="col-sm-3">
                     <div class="form-group">

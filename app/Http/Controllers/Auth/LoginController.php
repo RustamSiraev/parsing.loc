@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Auth;
-use Carbon\Carbon;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -19,7 +18,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected string $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -37,13 +36,6 @@ class LoginController extends Controller
             Auth::logout();
             throw ValidationException::withMessages(['status' => __('The account is inactive')]);
         }
-
-        $counter = $user->sign_in_count + 1;
-        $user->update([
-            'last_sign_in_at' => Carbon::now()->toDateTimeString(),
-            'sign_in_count' => $counter,
-            'last_sign_in_ip' => $request->getClientIp()
-        ]);
     }
 
     public function redirectTo()

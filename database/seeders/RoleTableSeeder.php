@@ -12,15 +12,14 @@ class RoleTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $roles = [
             ['slug' => 'root', 'name' => 'Администратор', 'title' => 'Администратор системы'],
-            ['slug' => 'admin', 'name' => 'Администратор СПО', 'title' => 'Администратор учебного заведения'],
-            ['slug' => 'college', 'name' => 'Секретарь СПО', 'title' => 'Секретарь учебного заведения'],
-            ['slug' => 'user', 'name' => 'Абитуриент', 'title' => 'Абитуриент'],
+            ['slug' => 'user', 'name' => 'Пользователь', 'title' => 'Пользователь'],
         ];
-        foreach ($roles as $item) {
+        foreach ($roles as $item)
+        {
             $role = new Role();
             $role->name = $item['name'];
             $role->title = $item['title'];

@@ -11,12 +11,10 @@
     <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-    @auth
-        <link href="{{ asset('css/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
-    @endauth
+    <link href="{{ asset('css/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/_style.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -49,50 +47,6 @@
                                 </li>
                             @endif
                         @else
-                            @role('root')
-                            @php $instruction = '1.pdf'; @endphp
-                            @endrole
-                            @role('admin')
-                            @php $instruction = '2.pdf'; @endphp
-                            @endrole
-                            @role('college')
-                            @php $instruction = '2.pdf'; @endphp
-                            @endrole
-                            @role('user')
-                            @php $instruction = '3.pdf'; @endphp
-                            @endrole
-
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link" target="_blank"
-                                       href="{{ route('download', ['file' => $instruction]) }}"
-                                       role="button" aria-expanded="false">
-                                        <i class="bi bi-file-earmark-medical"></i>Инструкции
-                                    </a>
-                                </li>
-                            </ul>
-
-                            @noRole('root')
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link" href="{{ route('message') }}" role="button"
-                                       aria-expanded="false">
-                                        <i class="bi bi-person-lines-fill"></i>Тех. помощь
-                                    </a>
-                                </li>
-                            </ul>
-                            @endrole
-                            @role('user')
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link" href="{{ route('applicant.contacts') }}" role="button"
-                                       aria-expanded="false">
-                                        <i class="bi bi-telephone-outbound"></i>Контакты
-                                    </a>
-                                </li>
-                            </ul>
-                            @endrole
-
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                    data-bs-toggle="dropdown" aria-expanded="false">
@@ -127,16 +81,10 @@
     @auth
         @role('root')
         @include('layouts.part.root')
-        @endrole
-        @role('admin')
-        @include('layouts.part.college')
-        @endrole
-        @role('college')
-        @include('layouts.part.college')
-        @endrole
+        @endRole
         @role('user')
-        @include('layouts.part.applicant')
-        @endrole
+        @include('layouts.part.user')
+        @endRole
     @endauth
 
     <main class="py-4">
@@ -154,22 +102,11 @@
 <!-- Scripts -->
 <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
 <script src="{{ asset('js/app.js') }}"></script>
-<script src="{{ asset('js/select2.min.js') }}"></script>
 <script src="{{ asset('js/script.js') }}"></script>
-@auth
-    <script src="{{ asset('js/xlsx.full.min.js') }}"></script>
-    <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('js/dataTables.bootstrap5.min.js') }}"></script>
-    @role('root')
-    <script src="{{ asset('js/admin.js') }}"></script>
-    @endrole
-    @role('admin')
-    <script src="{{ asset('js/college.js') }}"></script>
-    @endrole
-    @role('user')
-    <script src="{{ asset('js/main.js') }}"></script>
-    @endrole
-@endauth
+<script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('js/dataTables.bootstrap5.min.js') }}"></script>
+@role('root')
+<script src="{{ asset('js/admin.js') }}"></script>
+@endRole
 </body>
-
 </html>

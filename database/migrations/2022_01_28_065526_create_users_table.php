@@ -20,20 +20,9 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone')->nullable();
-            $table->unsignedBigInteger('role_id')->nullable();
-            $table->boolean('is_director')->nullable()->default(0);
-            $table->integer('college_id')->nullable();
-            $table->unsignedBigInteger('applicant_id')->nullable();
+            $table->unsignedBigInteger('role_id')->nullable()->default(2);
+            $table->string('avatar')->nullable();
             $table->boolean('status')->default(1)->nullable();
-            $table->integer('sign_in_count')->nullable();
-            $table->timestamp('current_sign_in_at')->nullable();
-            $table->timestamp('last_sign_in_at')->nullable();
-            $table->string('current_sign_in_ip', 255)->nullable();
-            $table->string('last_sign_in_ip', 255)->nullable();
-            $table->string('cert', 255)->nullable();
-            $table->string('gender')->nullable()->default(1);
-            $table->timestamp('born_at')->nullable();
-            $table->string('snils', 255)->nullable();
             $table->rememberToken();
             $table->timestamps();
 
@@ -41,12 +30,6 @@ class CreateUsersTable extends Migration
             $table->foreign('role_id')
                 ->references('id')
                 ->on('roles')
-                ->onDelete('restrict');
-
-            // внешний ключ, ссылается на поле id таблицы applicants
-            $table->foreign('applicant_id')
-                ->references('id')
-                ->on('applicants')
                 ->onDelete('restrict');
         });
     }

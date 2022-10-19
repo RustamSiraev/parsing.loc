@@ -33,9 +33,10 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
+        $this->reportable(function (Throwable $e)
+        {
             //
         });
     }
@@ -43,8 +44,9 @@ class Handler extends ExceptionHandler
     protected function invalid($request, $exception)
     {
         $redirect = parent::invalid($request, $exception);
-        if (session('parents')) {
-            return $redirect->with('parents', 'yes');
+        if (session('user'))
+        {
+            return $redirect->with('user', 'yes');
         }
         return $redirect;
     }

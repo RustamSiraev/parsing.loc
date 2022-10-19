@@ -6,7 +6,7 @@
         @noRole('root')
         <a href="{{ route('college.statements.create')}}" class="btn btn-primary btn-add-user">
             <i class="bi bi-plus-lg"></i>Добавить заявление</a>
-        @endrole
+        @endRole
     </div>
     <div class="">
         <table class="table table-secondary table-bordered college-statements-datatable table-striped" id="statements-table" style="width:100%">

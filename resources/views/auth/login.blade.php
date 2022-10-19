@@ -19,12 +19,16 @@
                                 <div class="col-md-6">
                                     <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
                                         name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-
-                                    @error('email')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
+                                    @if ($errors->any())
+                                        <span class="invalid-feedback-my" role="alert">
+                                            @error('status')
+                                                <strong>{{ __('Your account is blocked') }}</strong>
+                                            @enderror
+                                            @error('email')
+                                                <strong>{{ __('Wrong login or password') }}</strong>
+                                            @enderror
                                         </span>
-                                    @enderror
+                                    @endif
                                 </div>
                             </div>
 

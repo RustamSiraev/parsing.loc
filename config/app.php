@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Комплектование школ'),
+    'name' => env('APP_NAME', 'Find broken links'),
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://school.loc'),
+    'url' => env('APP_URL', 'http://parsing-bd.loc/'),
 
     'asset_url' => env('ASSET_URL', null),
 
@@ -175,8 +175,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\RoleServiceProvider::class,
-        App\Providers\PermissionServiceProvider::class,
-
     ],
 
     /*
@@ -191,7 +189,6 @@ return [
     */
 
     'aliases' => [
-
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,

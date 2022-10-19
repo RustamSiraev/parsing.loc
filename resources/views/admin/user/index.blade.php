@@ -6,17 +6,15 @@
         <a href="{{ route('users.create')}}" class="btn btn-primary btn-add-user">
             <i class="bi bi-person-plus"></i>Добавить пользователя</a>
     </div>
-    <div class="">
+    <div class="search-form mb-4">
         <table class="table table-secondary table-bordered user-datatable table-striped" style="width:100%">
             <thead>
             <tr>
-                <th class="dt-id">ID</th>
-                <th>Имя</th>
-                <th>Логин</th>
-                <th class="dt-body-status">Роль</th>
-                <th class="dt-body-status">Статус</th>
-                <th>СПО</th>
-                <th>Операции</th>
+                <th>ID</th>
+                <th>{{ __('Name') }}</th>
+                <th>{{ __('E-mail') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Actions') }}</th>
             </tr>
             </thead>
             <tbody>

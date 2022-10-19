@@ -6,26 +6,18 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">{{ __('Confirm Password') }}</div>
-
                     <div class="card-body">
                         {{ __('Please confirm your password before continuing.') }}
-
                         <form method="POST" action="{{ route('password.confirm') }}">
                             @csrf
-
                             <div class="mb-3 row">
                                 <label for="password" class="col-md-4 col-form-label text-end">
                                     {{ __('Password') }} :
                                 </label>
-
                                 <div class="col-md-6">
                                     <input id="password" type="password"
                                         class="form-control @error('password') is-invalid @enderror" name="password"
                                         required autocomplete="current-password">
-
-                                    <span class="message-label">
-                                        Пароль должен быть 8 и более символов, содержать минимум одну строчную и одну прописную букву латинского алфавита и одну цифру.
-                                    </span>
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -33,7 +25,6 @@
                                     @enderror
                                 </div>
                             </div>
-
                             <div class="mb-3 row">
                                 <div class="col-md-6 offset-md-4">
                                     <button type="submit" class="btn btn-primary">

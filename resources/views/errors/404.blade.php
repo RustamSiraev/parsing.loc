@@ -1,6 +1,5 @@
-@extends('layouts.app', ['title' => 'Страница не найдена'])
+@extends('layouts.app', ['title' => __("The government won't let us show you what's behind these doors")])
 
 @section('content')
-    <h1>Страница не найдена</h1>
-    <p class="mt-3 mb-0">Запрошенная страница не найдена.</p>
+    <h1>{{ __("The government won't let us show you what's behind these doors") }}</h1>
 @endsection

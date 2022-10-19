@@ -1,11 +1,11 @@
-@extends('layouts.app', ['title' => 'Смена пароля'])
+@extends('layouts.app', ['title' => __('Update Password')])
 
 @section('content')
     <div class="back-button">
-        <a href="{{ $back }}"><i class="bi bi-backspace"></i>Назад</a>
+        <a href="{{ $back }}"><i class="bi bi-backspace"></i>{{ __('Back') }}</a>
     </div>
     <div class="page-title">
-        <h1>Смена пароля</h1>
+        <h1>{{ __('Update Password') }}</h1>
     </div>
 
     <form id="password-edit-form" method="POST" action="{{ route('users.password.change') }}">
@@ -13,29 +13,28 @@
         @csrf
         <input type="hidden" name="user_id" value="{{ $user->id }}">
         <input type="hidden" name="back" value="{{ $back }}">
-        <div class="user-add-form">
+        <div class="search-form">
             <div class="row justify-content-center">
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label class="control-label required" for="new-password">Новый пароль:</label>
+                        <label class="control-label required" for="new-password">{{ __('New Password') }}:</label>
                         <input id="new-password" type="password"
                                class="form-control @error('new-password') is-invalid @enderror"
                                name="new-password" value="{{ old('new-password') ?? '' }}" required
                                autocomplete="new-password"
                                autofocus>
-                        <span class="message-label">
-                            Пароль должен быть 8 и более символов, содержать минимум одну строчную и одну прописную букву латинского алфавита и одну цифру.
-                        </span>
                         @error('new-password')
                         <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
+                            <strong>{{ $message }}</strong>
+                        </span>
                         @enderror
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label class="control-label required" for="new-password-confirm">Повторите пароль:</label>
+                        <label class="control-label required" for="new-password-confirm">
+                            {{ __('Confirm Password') }}:
+                        </label>
                         <input id="new-password-confirm" type="password"
                                class="form-control @error('new-password-confirm') is-invalid @enderror"
                                name="new-password-confirm" value="{{ old('new-password-confirm') ?? '' }}" required
@@ -51,7 +50,7 @@
             </div>
             <div class="d-flex btn-footer">
                 <button type="submit" class="btn btn-primary btn-add-user">
-                    <i class="bi bi-save"></i>Сохранить
+                    <i class="bi bi-save"></i>{{ __('Save') }}
                 </button>
             </div>
         </div>

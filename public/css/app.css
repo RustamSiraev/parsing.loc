@@ -18036,19 +18036,3 @@ textarea.form-control-lg {
 .bi-filetype-xlsx::before {
   content: "\f793";
 }
-
-.message-label {
-    display: none;
-}
-
-input:focus + .message-label {
-    display: inline-block;
-}
-
-#password {
-    margin-bottom: 10px;
-}
-
-#new-password {
-    margin-bottom: 10px;
-}

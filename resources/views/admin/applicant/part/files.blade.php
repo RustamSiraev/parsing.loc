@@ -1,6 +1,6 @@
 <div class="tab-pane fade show" id="files" role="tabpanel" aria-labelledby="files-tab">
     <form>
-        <div class="user-add-form">
+        <div class="search-form">
             @php
                 $labels = [
                           'Фотография',
@@ -21,7 +21,7 @@
             @for($i=1;$i<14;$i++)
                 @if($i==1)
                     <form class="documents-form">
-                        <div class="user-add-form" id="document-form-1">
+                        <div class="search-form" id="document-form-1">
                             <div class="row" style="margin-bottom: 0;">
                                 <div class="col-md-5">
                                     <div class="form-group">
@@ -47,7 +47,7 @@
                     </form>
                 @else
                     <form id="documents-form-{{$i}}" class="documents-form">
-                        <div class="user-add-form" id="document-form-{{$i}}">
+                        <div class="search-form" id="document-form-{{$i}}">
                             <div class="row" style="margin-bottom: 0;">
                                 <div class="col-md-8">
                                     <div class="form-group">

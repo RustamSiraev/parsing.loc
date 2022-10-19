@@ -1,13 +1,6 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/RustamSiraev/hello-world/master/logo.svg" width="400"></a></p>
-
-<p align="center">
-</p>
-
 ## Installation
 
-git clone https://github.com/RustamSiraev/college.loc.git
-
-cd college.loc
+git clone
 
 composer install --ignore-platform-reqs
 

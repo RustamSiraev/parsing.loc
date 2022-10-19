@@ -1,7 +1,7 @@
 <div class="tab-pane fade show" id="diploma" role="tabpanel" aria-labelledby="diploma-tab">
     <form>
         @if($diploma)
-            <div class="user-add-form">
+            <div class="search-form">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -98,7 +98,7 @@
                 </div>
             </div>
         @else
-            <div class="user-add-form">
+            <div class="search-form">
                 <div class="row">
                     <div class="col-md-12">
                         <h2>Данные не загружены</h2>

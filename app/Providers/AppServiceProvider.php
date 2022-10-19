@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
 //        if ($this->app->isLocal()) {
 //            $this->app->register(Debugbar::class);
@@ -25,9 +25,9 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
-        if(config('app.debug')!=true) {
+        if(!config('app.debug')) {
             \URL::forceScheme('https');
         }
         Paginator::defaultView('pagination');

@@ -10,14 +10,14 @@ class NewRequestMailer extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $message;
+    private array $message;
 
     public function __construct(array $message)
     {
         $this->message = $message;
     }
 
-    public function build()
+    public function build(): NewRequestMailer
     {
         $title = 'Новое сообщение';
 

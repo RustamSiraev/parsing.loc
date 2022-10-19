@@ -3,12 +3,14 @@
         <ul class="news-pagination-list pagination">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
-                <li class="page-item disabled" aria-disabled="true" aria-label="Предыдущая">
-                    <a class="page-link" href="#">Предыдущая</a>
+                <li class="page-item disabled" aria-disabled="true" aria-label="{{ __('Previous') }}">
+                    <a class="page-link" href="#">{{ __('Previous') }}</a>
                 </li>
             @else
                 <li class="page-item">
-                    <a href="{{ $paginator->previousPageUrl() }}" class="page-link" rel="prev" aria-label="Предыдущая">Предыдущая</a>
+                    <a href="{{ $paginator->previousPageUrl() }}" class="page-link" rel="prev" aria-label="{{ __('Previous') }}">
+                        {{ __('Previous') }}
+                    </a>
                 </li>
             @endif
 
@@ -36,13 +38,15 @@
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
                 <li class="page-item next">
-                    <a href="{{ $paginator->nextPageUrl() }}" class="page-link" rel="next" aria-label="Следующая">
-                        Следующая
+                    <a href="{{ $paginator->nextPageUrl() }}" class="page-link" rel="next" aria-label="{{ __('Next') }}">
+                        {{ __('Next') }}
                     </a>
                 </li>
             @else
-                <li class="page-item next disabled" aria-disabled="true" aria-label="Следующая">
-                    <a class="page-link" href="#">Следующая</a>
+                <li class="page-item next disabled" aria-disabled="true" aria-label="{{ __('Next') }}">
+                    <a class="page-link" href="#">
+                        {{ __('Next') }}
+                    </a>
                 </li>
             @endif
         </ul>

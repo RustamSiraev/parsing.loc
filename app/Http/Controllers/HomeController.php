@@ -10,8 +10,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 
 set_time_limit(0);
@@ -45,6 +43,7 @@ class HomeController extends ParsingController
 
             return response()->json($parsing->id);
         }
+        return response()->json(['error' => __('This webpage is not available.')]);
     }
 
     public function parsing(Request $request)

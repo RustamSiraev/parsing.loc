@@ -91,6 +91,12 @@ $(document).ready(function () {
                 }
             },
             success: function (res) {
+                if (res.error) {
+                    $('#result').hide();
+                    $('.loading').hide();
+                    alert(res.error);
+                    return;
+                }
                 const resultTable = $('#result .report-datatable').DataTable({
                     responsive: true,
                     scrollX: true,

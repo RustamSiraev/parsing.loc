@@ -240,13 +240,15 @@ class ParsingController
             $this->badLinks[] = $url;
             $data['error'] = true;
 
-            Result::create([
-                'parsing_id' => $this->parsing->id,
-                'href' => $url,
-                'code' => $code != 0 ? $code : 'bad host',
-                'parent' => $parent,
-                'anchor' => $anchor,
-            ]);
+            if (!empty($this->parsing)) {
+                Result::create([
+                    'parsing_id' => $this->parsing->id,
+                    'href' => $url,
+                    'code' => $code != 0 ? $code : 'bad host',
+                    'parent' => $parent,
+                    'anchor' => $anchor,
+                ]);
+            }
         }
 
         if (!empty($this->parsing)) {

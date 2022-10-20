@@ -61,6 +61,8 @@ $(document).ready(function () {
         let res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
         return (res !== null)
     }
+    let timer;
+    let timer2;
 
     $(document).on('click', '#submit-button', function (e) {
         let site = $("#site").val().trim();
@@ -79,10 +81,14 @@ $(document).ready(function () {
             beforeSend: function () {
                 $('#result').show();
                 $('.loading').show();
-                $('#result .report-datatable thead th').each(function () {
-                    const title = $('#result .report-datatable thead th').eq($(this).index()).text();
-                    $(this).html('<input type="text" placeholder="' + title + '" />');
-                });
+                if (!$("#result-table").find('.dataTables_wrapper')) {
+                    $('#result .report-datatable thead th').each(function () {
+                        const title = $('#result .report-datatable thead th').eq($(this).index()).text();
+                        $(this).html('<input type="text" placeholder="' + title + '" />');
+                    });
+                } else {
+                    $( "#result-table" ).load( "logs/table.php" );
+                }
             },
             success: function (res) {
                 const resultTable = $('#result .report-datatable').DataTable({
@@ -93,10 +99,10 @@ $(document).ready(function () {
                     serverSide: false,
                     ajax: '/result/list?id=' + res,
                     columns: [
-                        {data: 'href', name: 'href'},
+                        {data: 'link', name: 'link'},
                         {data: 'anchor', name: 'anchor'},
-                        {data: 'parent', name: 'parent'},
-                        {data: 'code', name: 'code'},
+                        {data: 'url', name: 'url', className: 'dt-page',},
+                        {data: 'code', name: 'code', className: 'dt-page'},
                     ],
                     initComplete: function () {
                         this.api().columns([0, 1, 2, 3]).every(function (colIdx) {
@@ -114,9 +120,10 @@ $(document).ready(function () {
                         });
                     }
                 });
+                document.getElementById('button-kill').dataset.id = res;
                 reportsTable.ajax.reload();
-                let timer = setInterval(() => resultTable.ajax.reload(), 2000);
-                let timer2 = setInterval(() => reportsTable.ajax.reload(), 30000);
+                timer = setInterval(() => resultTable.ajax.reload(), 2000);
+                timer2 = setInterval(() => reportsTable.ajax.reload(), 4000);
                 $.ajax({
                     type: "GET",
                     dataType: "json",
@@ -140,5 +147,80 @@ $(document).ready(function () {
             }
         });
         return false;
+    });
+
+    if (document.getElementById('report')) {
+        $('#report .report-datatable thead th').each(function () {
+            const title = $('#report .report-datatable thead th').eq($(this).index()).text();
+            $(this).html('<input type="text" placeholder="' + title + '" />');
+        });
+
+        const resultTable = $('#report .report-datatable').DataTable({
+            responsive: true,
+            scrollX: true,
+            scrollY: true,
+            processing: true,
+            serverSide: false,
+            ajax: '/result/list?id=' + document.querySelector('#report-id').dataset.id,
+            columns: [
+                {data: 'link', name: 'link'},
+                {data: 'anchor', name: 'anchor'},
+                {data: 'url', name: 'url', className: 'dt-page',},
+                {data: 'code', name: 'code', className: 'dt-page'},
+            ],
+            initComplete: function () {
+                this.api().columns([0, 1, 2, 3]).every(function (colIdx) {
+                    let that = this;
+                    $('input', this.header()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that
+                                .search(this.value)
+                                .draw();
+                        }
+                    });
+                    $('input', resultTable.column(colIdx).header()).on('click', function (e) {
+                        e.stopPropagation();
+                    });
+                });
+            }
+        });
+    }
+
+    $(document).on('click', '.button-trash', function (e) {
+        let id = e.target.dataset.id;
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/parsing/delete",
+            data: {'id': id},
+            success: function (data) {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    reportsTable.ajax.reload();
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.button-kill', function (e) {
+        let id = e.target.dataset.id;
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/parsing/kill",
+            data: {'id': id},
+            success: function (data) {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    clearInterval(timer);
+                    clearInterval(timer2);
+                    reportsTable.ajax.reload();
+                    $('.loading').hide();
+                    document.getElementById('submit-button').disabled = false;
+                }
+            }
+        });
     });
 });

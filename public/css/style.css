@@ -120,6 +120,10 @@ button i {
     max-width: 30px !important;
 }
 
+.dt-page {
+    max-width: 120px !important;
+}
+
 th input {
     max-width: 100% !important;
 }
@@ -275,3 +279,25 @@ tbody > tr:hover {
     }
 }
 
+.bi {
+    padding: 0.1rem 0.1rem;
+}
+
+.bi::before {
+    font-size: 20px;
+}
+
+.button-kill {
+    background-image: url(../images/stop.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    display: block;
+    line-height: normal;
+    height: 100px;
+    width: 100px;
+    color: #941a1a;
+    text-decoration: none;
+    text-align: right;
+    z-index: 1000;
+    position: absolute;
+}

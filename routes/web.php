@@ -52,6 +52,10 @@ Route::middleware('web')->group(function () {
     Route::get('/start', [HomeController::class, 'start'])->name('start');
     Route::get('/parsing', [HomeController::class, 'parsing'])->name('parsing');
     Route::get('/parsing/list', [HomeController::class, 'getParsings'])->name('parsings.list');
+    Route::get('/parsing/{parsing}/show', [ParsingController::class, 'show'])->name('parsings.show');
+    Route::get('/parsing/delete', [HomeController::class, 'delete'])->name('parsings.delete');
+    Route::get('/parsing/kill', [HomeController::class, 'kill'])->name('parsings.kill');
+    Route::get('/result/list', [HomeController::class, 'getResults'])->name('results.list');
     Route::get('/result/list', [HomeController::class, 'getResults'])->name('results.list');
 
 Route::middleware('auth')->group(function () {

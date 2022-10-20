@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Parsing\ParsingController;
 use App\Models\Parsing;
+use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Contracts\Foundation\Application;
@@ -52,6 +53,12 @@ class HomeController extends ParsingController
         return $this->runParser($parsing);
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return void
+     * @throws Exception
+     */
     public function getParsings(Request $request)
     {
         if ($request->ajax())
@@ -65,7 +72,7 @@ class HomeController extends ParsingController
                 ->addIndexColumn()
                 ->addColumn('action', function ($row)
                 {
-                    return '<a href="/report/index.php?id=' . $row->id . '" target="_blank"><i class="bi bi-eye"></i></a>
+                    return '<a href="/parsing/' . $row->id . '/show" target="_blank"><i class="bi bi-eye"></i></a>
                             <a href="#" data-id="' . $row->id . '" class="button-trash"><i class="bi bi-trash" data-id="' . $row->id . '"></i></a>';
                 })
                 ->rawColumns(['action'])
@@ -73,59 +80,53 @@ class HomeController extends ParsingController
         }
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return void
+     * @throws Exception
+     */
     public function getResults(Request $request)
     {
         if ($request->ajax())
         {
             $parsing = $this->parsing->findOrFail($request->all()['id']);
 
-            $data = $parsing->results() ?? [];
+            $data = $parsing->results();
             return Datatables::of($data)
                 ->addIndexColumn()
+                ->addColumn('url', function ($row) {
+                    return '<a href="' . $row->parent . '" target="_blank">url</a>';
+                })
+                ->addColumn('link', function ($row) {
+                    return '<a href="' . $row->href . '" target="_blank">' . $row->href . '</a>';
+                })
+                ->rawColumns(['action', 'url', 'link'])
                 ->make(true);
         }
     }
 
-
-    public function download(string $input)
+    /**
+     *
+     * @param Request $request
+     * @return bool
+     */
+    public function delete(Request $request): bool
     {
-        $fileName = str_replace('.pdf', '', $input);
+        $parsing = $this->parsing->findOrFail($request->all()['id']);
 
-        if (in_array($fileName, [1, 2, 3]))
-        {
-            $file = Storage::disk('public')->get('/instruction/' . $input);
+        return $parsing->delete();
+    }
 
-            switch (auth()->user()->role_id)
-            {
-                case 1:
-                    return (new Response($file, 200))
-                        ->header('Content-Type', 'application/pdf');
-                case 2:
-                case 3:
-                    if ($fileName > 1)
-                    {
-                        return (new Response($file, 200))
-                            ->header('Content-Type', 'application/pdf');
-                    }
-                    else
-                    {
-                        return redirect(auth()->user()->home());
-                    }
-                case 4:
-                    if ($fileName == 3)
-                    {
-                        return (new Response($file, 200))
-                            ->header('Content-Type', 'application/pdf');
-                    }
-                    else
-                    {
-                        return redirect(auth()->user()->home());
-                    }
-            }
-        }
-        else
-        {
-            return redirect(auth()->user()->home());
-        }
+    /**
+     *
+     * @param Request $request
+     * @return false|string|null
+     */
+    public function kill(Request $request)
+    {
+        $parsing = $this->parsing->findOrFail($request->all()['id']);
+
+        return $parsing->update(['end' => true]);
     }
 }

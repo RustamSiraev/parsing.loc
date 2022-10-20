@@ -8,8 +8,11 @@ use Exception;
 use Illuminate\Http\Request;
 use phpQuery;
 use phpQueryObject;
+use Symfony\Component\DomCrawler\Crawler;
 
 require_once 'phpQuery/phpQuery/phpQuery.php';
+
+set_time_limit(0);
 
 class _ParsingController
 {
@@ -114,53 +117,26 @@ class _ParsingController
     {
         if (!in_array($url, $this->badLinks))
         {
-            $parseSiteUrl = parse_url($url);
             $data = $this->getData($url, $url)['data'];
-            $document = phpQuery::newDocument($data);
-            $links = $document->find('a'); //ищем все ссылки на странице
 
-            foreach ($links as $link)
-            {
-                $pqLink = pq($link); //создаем объект phpQueryObject
-                $href = $pqLink->attr('href');
+            $crawler = new Crawler(null, $url);
+            $crawler->addHtmlContent($data, 'UTF-8');
+
+            $crawler->filter('a')->each(function (Crawler $node) use ($url) {
+                $href = $node->link()->getUri();
 
                 if ($this->checkExceptions($href))
                 {
-                    continue;
-                }
-
-                if (!preg_match('#^https?://#i', $href))
-                {
-                    if (str_starts_with($href, '//vk.com/video_ext'))
-                    {
-                        $href = 'https:' . $href;
-                    }
-                    elseif (str_starts_with($href, '/'))
-                    {
-                        $href = $parseSiteUrl['scheme'] . '://' . $parseSiteUrl['host'] . $href;
-                    }
-                    elseif (str_starts_with($href, './'))
-                    {
-                        $trimUrl = $url;
-                        if (mb_substr($url, -1) != '/')
-                            $trimUrl = strrev(strstr(strrev($url), '/'));
-
-                        $href = $trimUrl . ltrim($href, './');
-                    }
-                    else
-                    {
-                        $href = rtrim($this->siteUrl, '/') . '/' . $href;
-                    }
+                    return;
                 }
 
                 //пропускаем если ссылка уже была обработана
                 if (in_array($href, $this->internalLinks) || in_array($href, $this->checkedLinks) || in_array($href, $this->badLinks))
                 {
-                    continue;
+                    return;
                 }
 
-                $anchor = $this->getAnchor($pqLink);
-
+                $anchor = $this->getAnchor($node->link());
                 $this->getData($href, $url, $anchor);
 
                 //если ссылка внутрення добавляем ее в массив $internalLinks для дальнейшей обработки
@@ -174,7 +150,7 @@ class _ParsingController
                     if (!in_array($href, $this->badLinks))
                         $this->checkedLinks[] = $href;
                 }
-            }
+            });
         }
     }
 
@@ -248,17 +224,16 @@ class _ParsingController
     /**
      * Получение анкор ссылки
      * текст или название первого атрибута
-     * @param phpQueryObject $pqLink
+     * @param  $link
      * @return string
      */
-    protected function getAnchor(phpQueryObject $pqLink): string
+    protected function getAnchor($link): string
     {
-        $text = trim($pqLink->text());
-        if ($text)
+        if ($link->getNode()->childElementCount)
         {
-            return $text;
+            return $link->getNode()->firstChild->nodeName;
         }
-        return mb_substr(trim($pqLink->html()), 1, stripos(trim($pqLink->html()), ' '));
+        return $link->getNode()->textContent;
     }
 
     /**
@@ -291,13 +266,14 @@ class _ParsingController
      */
     protected function checkExceptions(string $url = null): bool
     {
+        $link = str_replace($this->siteUrl, '', $url);
         if (!$url
-            || str_starts_with($url, 'mailto')
-            || str_starts_with($url, '#')
-            || str_starts_with($url, 'viber')
-            || str_starts_with($url, 'skype')
-            || str_starts_with($url, 'javascript:')
-            || str_starts_with($url, 'tel'))
+            || str_starts_with($link, 'mailto')
+            || str_starts_with($link, '#')
+            || str_starts_with($link, 'viber')
+            || str_starts_with($link, 'skype')
+            || str_starts_with($link, 'javascript:')
+            || str_starts_with($link, 'tel'))
         {
             return true;
         }

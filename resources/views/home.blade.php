@@ -45,6 +45,7 @@
         <h2>Checker result</h2>
         <div class="loading">
             <div class="half-circle-spinner">
+                <a href="#" class="button-kill" id="button-kill" data-id=""></a>
                 <div class="circle circle-1"></div>
                 <div class="circle circle-2"></div>
             </div>

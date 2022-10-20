@@ -5,11 +5,15 @@ namespace App\Http\Controllers\Parsing;
 use App\Models\Parsing;
 use App\Models\Result;
 use Exception;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use phpQuery;
 use phpQueryObject;
 
 require_once 'phpQuery/phpQuery/phpQuery.php';
+
+set_time_limit(0);
 
 class ParsingController
 {
@@ -20,6 +24,7 @@ class ParsingController
     private string $siteUrl;
     private array $internalLinks = array();
     private array $badLinks = array();
+    private array $allLinks = array();
     private array $checkedLinks = array();
     private int $iterations;
     private array $parseSiteUrl;
@@ -35,6 +40,7 @@ class ParsingController
     {
         $this->parsing = $parsing;
         $this->siteUrl = $parsing->href;
+        $this->allLinks[] = $parsing->href;
         $this->internalLinks[] = $parsing->href;
         $this->parseSiteUrl = parse_url($parsing->href);
         $this->iterations = self::ITERATIONS_LIMIT;
@@ -65,7 +71,7 @@ class ParsingController
 
         $this->parsing->update(
             [
-                'checked' => count($this->checkedLinks),
+                'checked' => count($this->allLinks),
                 'broken' => count($this->badLinks),
                 'stop' => now(),
                 'end' => true
@@ -118,12 +124,6 @@ class ParsingController
             $data = $this->getData($url, $url)['data'];
             $document = phpQuery::newDocument($data);
             $links = $document->find('a'); //ищем все ссылки на странице
-
-//            $crawler = new Crawler(null, $url);
-//            $crawler->addHtmlContent($data, 'UTF-8');
-//            $crawler->filter('a')->each(function (Crawler $node, $i) {
-//
-//            }
 
             foreach ($links as $link)
             {
@@ -193,7 +193,17 @@ class ParsingController
      */
     protected function getData(string $url, string $parent = '', string $anchor = ''): array
     {
-        $this->saveLog($url);
+        //$this->saveLog($url);
+
+        if (!empty($this->parsing)) {
+            if ($this->parsing->findOrFail($this->parsing->id)->end)
+                exit;
+        }
+
+        if (!in_array($url, $this->allLinks))
+        {
+            $this->allLinks[] = $url;
+        }
         $curl = curl_init();
         $header[0] = "Accept: text/xml,application/xml,application/xhtml+xml,";
         $header[0] .= "text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5";
@@ -242,7 +252,7 @@ class ParsingController
         if (!empty($this->parsing)) {
             $this->parsing->update(
                 [
-                    'checked' => count($this->checkedLinks),
+                    'checked' => count($this->allLinks),
                     'broken' => count($this->badLinks),
                     'stop' => now(),
                 ]
@@ -322,45 +332,13 @@ class ParsingController
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
-     * @param \App\Models\Parsing $parsing
-     * @return \Illuminate\Http\Response
+     * @param Parsing $parsing
+     * @return Factory|View|Application
      */
-    public function show(Parsing $parsing)
+    public function show(Parsing $parsing): Factory|View|Application
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Models\Parsing $parsing
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Parsing $parsing)
-    {
-        //
+        return view('parsing.show', compact('parsing'));
     }
 }

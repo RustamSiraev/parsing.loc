@@ -25,6 +25,7 @@ class Parsing extends Model
         'end',
         'checked',
         'broken',
+        'pid',
     ];
 
     public function user(): BelongsTo
@@ -39,6 +40,9 @@ class Parsing extends Model
 
     public function time(): int
     {
+        if (!$this->stop) {
+            return strtotime(now()) - strtotime($this->start);
+        }
         return strtotime($this->stop) - strtotime($this->start);
     }
 

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->foreign('parsing_id')
                 ->references('id')
                 ->on('parsings')
-                ->onDelete('restrict');
+                ->onDelete('cascade');
         });
     }
 

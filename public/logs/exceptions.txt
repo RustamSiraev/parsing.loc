@@ -1,0 +1,12 @@
+t.me/share
+vk.com/share
+connect.ok.ru
+vkontakte.ru/share
+facebook.com/sharer
+twitter.com/intent/tweet
+linkedin.com/share
+pinterest.com/pin/create/button
+connect.mail.ru
+api.whatsapp.com
+telegram.me/share
+twitter.com/share

@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SignupController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Parsing\ParsingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,6 +48,11 @@ Route::middleware('web')->group(function () {
     Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+    Route::get('/start', [HomeController::class, 'start'])->name('start');
+    Route::get('/parsing', [HomeController::class, 'parsing'])->name('parsing');
+    Route::get('/parsing/list', [HomeController::class, 'getParsings'])->name('parsings.list');
+    Route::get('/result/list', [HomeController::class, 'getResults'])->name('results.list');
 
 Route::middleware('auth')->group(function () {
     // Админ

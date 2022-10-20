@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <form action="/" method="post">
+    <form method="get" id="parsing-form" action="{{ route('start') }}" enctype="multipart/form-data">
         <div class="search-form mb-4">
             <div class="row">
                 <div class="col-md-4">
@@ -38,6 +38,19 @@
                     </thead>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <div id="result">
+        <h2>Checker result</h2>
+        <div class="loading">
+            <div class="half-circle-spinner">
+                <div class="circle circle-1"></div>
+                <div class="circle circle-2"></div>
+            </div>
+        </div>
+        <div id="result-table">
+            @include('part.table')
         </div>
     </div>
 @endsection

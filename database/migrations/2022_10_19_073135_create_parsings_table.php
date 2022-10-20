@@ -15,7 +15,20 @@ return new class extends Migration
     {
         Schema::create('parsings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('href', 500);
+            $table->timestamp('start')->nullable();
+            $table->timestamp('stop')->nullable();
+            $table->boolean('end')->default(false);
+            $table->integer('checked')->nullable();
+            $table->integer('broken')->nullable();
             $table->timestamps();
+
+            // внешний ключ, ссылается на поле id таблицы users
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('restrict');
         });
     }
 

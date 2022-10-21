@@ -77,6 +77,7 @@ class HomeController extends ParsingController
             {
                 $item->date = date('d.m.Y H:i:s', strtotime($item->created_at));
                 $item->time = sprintf('%02d:%02d:%02d', ($item->time() / 3600), ($item->time() / 60 % 60), $item->time() % 60);
+                $item->email = $item->user->email;
             });
             return Datatables::of($data)
                 ->addIndexColumn()

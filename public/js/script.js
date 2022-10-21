@@ -28,11 +28,12 @@ $(document).ready(function () {
             [5, 10, 25, 50, 'All'],
         ],
         columns: [
-            {data: 'date', name: 'date'},
+            {data: 'date', name: 'date', className: 'dt-page',},
+            {data: 'email', name: 'email', className: 'dt-page',},
             {data: 'href', name: 'href'},
-            {data: 'time', name: 'time'},
-            {data: 'checked', name: 'checked'},
-            {data: 'broken', name: 'broken'},
+            {data: 'time', name: 'time', className: 'dt-page',},
+            {data: 'checked', name: 'checked', className: 'dt-page',},
+            {data: 'broken', name: 'broken', className: 'dt-page',},
             {
                 data: 'action',
                 name: 'action',

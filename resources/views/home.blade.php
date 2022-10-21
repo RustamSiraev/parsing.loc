@@ -29,6 +29,7 @@
                     <thead>
                     <tr>
                         <th>Date</th>
+                        <th>User</th>
                         <th>Site</th>
                         <th>Time</th>
                         <th>Checked links, pcs</th>

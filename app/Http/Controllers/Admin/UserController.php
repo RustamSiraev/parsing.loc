@@ -45,6 +45,7 @@ class UserController extends AdminController
                 $item->statusValue = $item->getStatusValue();
                 $item->text = $item->status ? __('Block user') : __('Unblock user');
                 $item->icon = $item->status ? 'bi-unlock' : 'bi-lock';
+                $item->checks = $item->parsings->count();
                 $item->confirm = $item->status ? __('Do you approve the blocking?') : __('Do you approve unlock?');
             });
             return Datatables::of($data)

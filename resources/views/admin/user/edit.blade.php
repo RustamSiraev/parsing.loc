@@ -1,11 +1,11 @@
-@extends('layouts.app', ['title' => 'Редактирование пользователя'])
+@extends('layouts.app', ['title' => __('Edit User')])
 
 @section('content')
     <div class="back-button">
-        <a href="{{ route($back) }}"><i class="bi bi-backspace"></i>Назад</a>
+        <a href="{{ route($back) }}"><i class="bi bi-backspace"></i>{{ __("Go back") }}</a>
     </div>
     <div class="page-title">
-        <h1>Редактирование пользователя</h1>
+        <h1>{{ __('Edit User') }}</h1>
     </div>
     <div class="container">
         <div class="row justify-content-center">

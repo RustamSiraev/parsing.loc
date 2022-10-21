@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $('.user-datatable thead th').each(function (index) {
-        if (index < 3) {
+        if (index < 4) {
             var title = $('.user-datatable thead th').eq($(this).index()).text();
             $(this).html('<input type="text" placeholder="' + title + '" />');
         }
@@ -8,9 +8,6 @@ $(document).ready(function () {
 
     var usersTable = $('.user-datatable').DataTable({
         responsive: true,
-        language: {
-            url: '/js/ru.json'
-        },
         scrollX: true,
         processing: true,
         serverSide: false,
@@ -19,6 +16,7 @@ $(document).ready(function () {
             {data: 'id', name: 'id', className: 'dt-id '},
             {data: 'show', name: 'show'},
             {data: 'email', name: 'email'},
+            {data: 'checks', name: 'checks'},
             {data: 'statusValue', name: 'statusValue'},
             {
                 data: 'action',
@@ -28,7 +26,7 @@ $(document).ready(function () {
             },
         ],
         initComplete: function () {
-            this.api().columns([0, 1, 2]).every(function (colIdx) {
+            this.api().columns([0, 1, 2, 3]).every(function (colIdx) {
                 var that = this;
                 $('input', this.header()).on('keyup change clear', function () {
                     if (that.search() !== this.value) {
@@ -42,7 +40,7 @@ $(document).ready(function () {
                     e.stopPropagation();
                 });
             });
-            this.api().columns([3]).every(function (colIdx) {
+            this.api().columns([4]).every(function (colIdx) {
                 var that = this;
                 var title = $('.user-datatable thead th');
                 var select = $('<select><option value="">' + title[colIdx].innerHTML + '</option></select>')
@@ -99,7 +97,7 @@ $(document).ready(function () {
         })
     }
 
-    changeStatus('#user-change', '/changeStatus', usersTable);
+    changeStatus('#user-change', '/admin/changeStatus', usersTable);
 
     $(document).on('click', '#user-delete', function (e) {
         let id = document.querySelector('.user_id').value,

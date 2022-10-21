@@ -21,7 +21,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('web')->group(function () {
+Route::middleware('web')->group(function ()
+{
     // главная
     Route::get('/', [SignupController::class, 'index'])->name('index');
 
@@ -49,37 +50,36 @@ Route::middleware('web')->group(function () {
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-    Route::get('/start', [HomeController::class, 'start'])->name('start');
-    Route::get('/parsing', [HomeController::class, 'parsing'])->name('parsing');
-    Route::get('/parsing/list', [HomeController::class, 'getParsings'])->name('parsings.list');
-    Route::get('/parsing/{parsing}/show', [ParsingController::class, 'show'])->name('parsings.show');
-    Route::get('/parsing/delete', [HomeController::class, 'delete'])->name('parsings.delete');
-    Route::get('/parsing/kill', [HomeController::class, 'kill'])->name('parsings.kill');
-    Route::get('/result/list', [HomeController::class, 'getResults'])->name('results.list');
-    Route::get('/result/list', [HomeController::class, 'getResults'])->name('results.list');
-
-Route::middleware('auth')->group(function () {
-    // Админ
-    Route::group(['middleware' => 'role:root'], function() {
-        Route::prefix('admin')->group(function () {
-            // Пользователи
-            Route::get('/', [UserController::class, 'index'])->name('index');
-            Route::get('/users/list', [UserController::class, 'getUsers'])->name('users.list');
-            Route::get('/users/{user}/password', [UserController::class, 'password'])->name('users.password');
-            Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-            Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
-            Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-            Route::get('/users/{user}/parsing', [UserController::class, 'parsing'])->name('users.parsing');
-            Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-            Route::get('/deleteUser', [UserController::class, 'deleteUser']);
+    Route::middleware('auth')->group(function ()
+    {
+        // Admin
+        Route::group(['middleware' => 'role:root'], function ()
+        {
+            Route::prefix('admin')->group(function ()
+            {
+                // Пользователи
+                Route::get('/', [UserController::class, 'index'])->name('index');
+                Route::get('/users/list', [UserController::class, 'getUsers'])->name('users.list');
+                Route::get('/users/{user}/password', [UserController::class, 'password'])->name('users.password');
+                Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+                Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
+                Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+                Route::get('/users/{user}/parsing', [UserController::class, 'parsing'])->name('users.parsing');
+                Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+                Route::get('/deleteUser', [UserController::class, 'deleteUser']);
+                Route::get('changeStatus', [UserController::class, 'changeStatus']);
+            });
         });
+
+        Route::get('/', [HomeController::class, 'index'])->name('home');
+        Route::get('/start', [HomeController::class, 'start'])->name('start');
+        Route::get('/parsing', [HomeController::class, 'parsing'])->name('parsing');
+        Route::get('/parsing/list', [HomeController::class, 'getParsings'])->name('parsings.list');
+        Route::get('/parsing/{parsing}/show', [HomeController::class, 'show'])->name('parsings.show');
+        Route::get('/parsing/delete', [HomeController::class, 'delete'])->name('parsings.delete');
+        Route::get('/parsing/kill', [HomeController::class, 'kill'])->name('parsings.kill');
+        Route::get('/result/list', [HomeController::class, 'getResults'])->name('results.list');
+        Route::post('/users/change', [UserController::class, 'change'])->name('users.password.change');
     });
-
-    Route::post('/users/change', [UserController::class, 'change'])->name('users.password.change');
-    Route::get('changeStatus', [UserController::class, 'changeStatus']);
-    Route::get('download/{file}', [HomeController::class, 'download'])->name('download');
-});
-
-Route::get('/', [HomeController::class, 'index'])->name('home');
 });
 

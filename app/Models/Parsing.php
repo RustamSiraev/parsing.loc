@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Parsing extends Model
 {
     use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -40,14 +41,32 @@ class Parsing extends Model
 
     public function time(): int
     {
-        if (!$this->stop) {
+        if (!$this->stop)
+        {
             return strtotime(now()) - strtotime($this->start);
         }
         return strtotime($this->stop) - strtotime($this->start);
     }
 
-    public function getAll(): Collection|array
+    public function getAll($id = false): Collection|array
     {
-        return self::all();
+        if ($id)
+        {
+            return self::where('user_id', $id)->get();
+        }
+        if (auth()->user()->isAdmin())
+        {
+            return self::all();
+        }
+        return self::where('user_id', auth()->user()->id)->get();
+    }
+
+    public function isMy(): bool
+    {
+        if (auth()->user()->isAdmin())
+        {
+            return true;
+        }
+        return $this->user_id == auth()->user()->id;
     }
 }

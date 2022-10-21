@@ -21,7 +21,7 @@ $(document).ready(function () {
         scrollY: true,
         processing: true,
         serverSide: false,
-        ajax: '/parsing/list',
+        ajax: '/parsing/list?id=' + document.querySelector('#user-id').dataset.id,
         order: [[0, 'desc']],
         lengthMenu: [
             [5, 10, 25, 50, -1],
@@ -64,95 +64,99 @@ $(document).ready(function () {
     let timer;
     let timer2;
 
-    $(document).on('click', '#submit-button', function (e) {
+    $(document).on('click', '#submit-button', function () {
         let site = $("#site").val().trim();
         if (!isValidURL(site)) {
             alert('This webpage is not available.');
-            return;
-        }
-        document.getElementById('submit-button').disabled = true;
-        $.ajax({
-            type: "GET",
-            dataType: "json",
-            url: "/start",
-            data: {
-                'site': site,
-            },
-            beforeSend: function () {
-                $('#result').show();
-                $('.loading').show();
-                if (!$("#result-table").find('.dataTables_wrapper')) {
-                    $('#result .report-datatable thead th').each(function () {
-                        const title = $('#result .report-datatable thead th').eq($(this).index()).text();
-                        $(this).html('<input type="text" placeholder="' + title + '" />');
-                    });
-                } else {
-                    $( "#result-table" ).load( "logs/table.php" );
-                }
-            },
-            success: function (res) {
-                if (res.error) {
-                    $('#result').hide();
-                    $('.loading').hide();
-                    alert(res.error);
-                    return;
-                }
-                const resultTable = $('#result .report-datatable').DataTable({
-                    responsive: true,
-                    scrollX: true,
-                    scrollY: true,
-                    processing: true,
-                    serverSide: false,
-                    ajax: '/result/list?id=' + res,
-                    columns: [
-                        {data: 'link', name: 'link'},
-                        {data: 'anchor', name: 'anchor'},
-                        {data: 'url', name: 'url', className: 'dt-page',},
-                        {data: 'code', name: 'code', className: 'dt-page'},
-                    ],
-                    initComplete: function () {
-                        this.api().columns([0, 1, 2, 3]).every(function (colIdx) {
-                            let that = this;
-                            $('input', this.header()).on('keyup change clear', function () {
-                                if (that.search() !== this.value) {
-                                    that
-                                        .search(this.value)
-                                        .draw();
+            return false;
+        } else {
+            document.getElementById('submit-button').disabled = true;
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: "/start",
+                data: {
+                    'site': site,
+                },
+                beforeSend: function () {
+                    $('#result').show();
+                    $('.loading').show();
+                    if (!$("#result-table").find('.dataTables_wrapper')) {
+                        $('#result .report-datatable thead th').each(function () {
+                            const title = $('#result .report-datatable thead th').eq($(this).index()).text();
+                            $(this).html('<input type="text" placeholder="' + title + '" />');
+                        });
+                    } else {
+                        $( "#result-table" ).load( "logs/table.php" );
+                    }
+                },
+                success: function (res) {
+                    if (res.error) {
+                        $('#result').hide();
+                        $('.loading').hide();
+                        alert(res.error);
+                        return false;
+                    } else {
+                        const resultTable = $('#result .report-datatable').DataTable({
+                            responsive: true,
+                            scrollX: true,
+                            scrollY: true,
+                            processing: true,
+                            serverSide: false,
+                            ajax: '/result/list?id=' + res,
+                            columns: [
+                                {data: 'link', name: 'link'},
+                                {data: 'anchor', name: 'anchor'},
+                                {data: 'url', name: 'url', className: 'dt-page',},
+                                {data: 'code', name: 'code', className: 'dt-page'},
+                            ],
+                            initComplete: function () {
+                                this.api().columns([0, 1, 2, 3]).every(function (colIdx) {
+                                    let that = this;
+                                    $('input', this.header()).on('keyup change clear', function () {
+                                        if (that.search() !== this.value) {
+                                            that
+                                                .search(this.value)
+                                                .draw();
+                                        }
+                                    });
+                                    $('input', resultTable.column(colIdx).header()).on('click', function (e) {
+                                        e.stopPropagation();
+                                    });
+                                });
+                            }
+                        });
+                        document.getElementById('button-kill').dataset.id = res;
+                        reportsTable.ajax.reload();
+                        timer = setInterval(() => resultTable.ajax.reload(), 2000);
+                        timer2 = setInterval(() => reportsTable.ajax.reload(), 4000);
+                        $.ajax({
+                            type: "GET",
+                            dataType: "json",
+                            url: "/parsing",
+                            data: {
+                                'id': res,
+                            },
+                            beforeSend: function () {
+                                resultTable.ajax.reload();
+                                reportsTable.ajax.reload();
+                            },
+                            success: function (data) {
+                                if (data.error) {
+                                    alert(data.error);
                                 }
-                            });
-                            $('input', resultTable.column(colIdx).header()).on('click', function (e) {
-                                e.stopPropagation();
-                            });
+                                clearInterval(timer);
+                                clearInterval(timer2);
+                                resultTable.ajax.reload();
+                                reportsTable.ajax.reload();
+                                $('.loading').hide();
+                                document.getElementById('submit-button').disabled = false;
+                            }
                         });
                     }
-                });
-                document.getElementById('button-kill').dataset.id = res;
-                reportsTable.ajax.reload();
-                timer = setInterval(() => resultTable.ajax.reload(), 2000);
-                timer2 = setInterval(() => reportsTable.ajax.reload(), 4000);
-                $.ajax({
-                    type: "GET",
-                    dataType: "json",
-                    url: "/parsing",
-                    data: {
-                        'id': res,
-                    },
-                    beforeSend: function () {
-                        resultTable.ajax.reload();
-                        reportsTable.ajax.reload();
-                    },
-                    success: function () {
-                        clearInterval(timer);
-                        clearInterval(timer2);
-                        resultTable.ajax.reload();
-                        reportsTable.ajax.reload();
-                        $('.loading').hide();
-                        document.getElementById('submit-button').disabled = false;
-                    }
-                });
-            }
-        });
-        return false;
+                }
+            });
+        }
     });
 
     if (document.getElementById('report')) {

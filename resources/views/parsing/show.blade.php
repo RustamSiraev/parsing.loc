@@ -8,6 +8,12 @@
                 <div class="col-md-12">
                     <table class="table table-secondary table-borderedtable-striped statistic-table" style="width:100%">
                         <tbody>
+                        @role('root')
+                        <tr>
+                            <td>User</td>
+                            <td>{{ $parsing->user->email }}</td>
+                        </tr>
+                        @endRole
                         <tr>
                             <td>URL</td>
                             <td>{{ $parsing->href }}</td>

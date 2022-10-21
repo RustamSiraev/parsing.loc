@@ -332,15 +332,4 @@ class ParsingController
 
         return false;
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Parsing $parsing
-     * @return Factory|View|Application
-     */
-    public function show(Parsing $parsing): Factory|View|Application
-    {
-        return view('parsing.show', compact('parsing'));
-    }
 }

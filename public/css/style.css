@@ -158,14 +158,6 @@ th select {
     font-weight: bold;
 }
 
-.text-frame {
-    padding: 0.4rem;
-    text-decoration: none;
-    font-size: 0.7875rem;
-    border-radius: 0.2rem;
-    border: 1px solid #ced4da;
-}
-
 table.table-bordered.dataTable td:last-child, table.table-bordered.dataTable td:last-child {
     white-space: nowrap;
 }

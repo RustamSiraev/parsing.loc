@@ -39,6 +39,7 @@ class HomeController extends ParsingController
             $parsing = $this->parsing->create([
                 'href' => $site['url'],
                 'start' => now(),
+                'user_id' => auth()->user()->id,
             ]);
 
             return response()->json($parsing->id);
@@ -49,7 +50,11 @@ class HomeController extends ParsingController
     public function parsing(Request $request)
     {
         $parsing = $this->parsing->findOrFail($request->all()['id']);
-        return $this->runParser($parsing);
+
+        if ($parsing->isMy())
+            return $this->runParser($parsing);
+
+        return response()->json(['error' => __("The government won't let us show you what's behind these doors")]);
     }
 
     /**
@@ -62,7 +67,13 @@ class HomeController extends ParsingController
     {
         if ($request->ajax())
         {
-            $data = $this->parsing->getAll()->each(function ($item)
+            $data = $this->parsing->getAll();
+
+            if ($request->all()['id']) {
+                $data = $this->parsing->getAll($request->all()['id']);
+            }
+
+            $data->each(function ($item)
             {
                 $item->date = date('d.m.Y H:i:s', strtotime($item->created_at));
                 $item->time = sprintf('%02d:%02d:%02d', ($item->time() / 3600), ($item->time() / 60 % 60), $item->time() % 60);
@@ -80,6 +91,20 @@ class HomeController extends ParsingController
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param Parsing $parsing
+     * @return Factory|View|Application
+     */
+    public function show(Parsing $parsing): Factory|View|Application
+    {
+        if ($parsing->isMy())
+            return view('parsing.show', compact('parsing'));
+
+        return abort(404);
+    }
+
+    /**
      *
      * @param Request $request
      * @return void
@@ -94,10 +119,12 @@ class HomeController extends ParsingController
             $data = $parsing->results();
             return Datatables::of($data)
                 ->addIndexColumn()
-                ->addColumn('url', function ($row) {
+                ->addColumn('url', function ($row)
+                {
                     return '<a href="' . $row->parent . '" target="_blank">url</a>';
                 })
-                ->addColumn('link', function ($row) {
+                ->addColumn('link', function ($row)
+                {
                     return '<a href="' . $row->href . '" target="_blank">' . $row->href . '</a>';
                 })
                 ->rawColumns(['action', 'url', 'link'])
@@ -108,19 +135,22 @@ class HomeController extends ParsingController
     /**
      *
      * @param Request $request
-     * @return bool
+     * @return bool|JsonResponse|null
      */
-    public function delete(Request $request): bool
+    public function delete(Request $request)
     {
         $parsing = $this->parsing->findOrFail($request->all()['id']);
 
-        return $parsing->delete();
+        if ($parsing->isMy())
+            return $parsing->delete();
+
+        return response()->json(['error' => __("The government won't let us show you what's behind these doors")]);
     }
 
     /**
      *
      * @param Request $request
-     * @return false|string|null
+     * @return bool
      */
     public function kill(Request $request)
     {

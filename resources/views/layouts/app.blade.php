@@ -22,7 +22,7 @@
     <div class="header-menu">
         <nav class="navbar navbar-expand-md navbar-light bg-white-main shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="@auth{{ auth()->user()->home() }}@else{{ '/' }}@endauth">
+                <a class="navbar-brand" href="/">
                     {{ config('app.name', 'Laravel') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -56,7 +56,7 @@
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <li>
                                         <a class="dropdown-item" href="{{ route('password') }}">
-                                            Сменить пароль
+                                            {{ __('Update Password') }}
                                         </a>
                                     </li>
                                     <li>
@@ -82,15 +82,13 @@
         @role('root')
         @include('layouts.part.root')
         @endRole
-        @role('user')
-        @include('layouts.part.user')
-        @endRole
     @endauth
 
     <main class="py-4">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-12">
+                    <input type="hidden" value="{{ isset($user) ? $user->id : '' }}" id="user-id" data-id="{{ isset($user) ? $user->id : '' }}">
                     @include('layouts.flash-message')
                     @yield('content')
                 </div>

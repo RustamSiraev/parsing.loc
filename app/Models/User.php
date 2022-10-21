@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -71,8 +72,8 @@ class User extends Authenticatable
     public function getStatusValue(): string
     {
         $array = [
-            false => 'Заблокирован',
-            true => 'Активен',
+            false => __('Inactive'),
+            true => __('Active'),
         ];
 
         return $array[$this->status];
@@ -102,5 +103,10 @@ class User extends Authenticatable
             case 2:
                 return '/';
         }
+    }
+
+    public function parsings(): HasMany
+    {
+        return $this->hasMany(Parsing::class, 'user_id');
     }
 }

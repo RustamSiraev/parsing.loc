@@ -10,7 +10,7 @@ $(document).ready(function () {
     });
 
     $('.reports-datatable thead th').each(function (index) {
-        if (index < 5) {
+        if (index < 6) {
             const title = $('.reports-datatable thead th').eq($(this).index()).text();
             $(this).html('<input type="text" placeholder="' + title + '" />');
         }
@@ -28,6 +28,7 @@ $(document).ready(function () {
             [5, 10, 25, 50, 'All'],
         ],
         columns: [
+            {data: 'id', name: 'id', className: 'dt-id',},
             {data: 'date', name: 'date', className: 'dt-page',},
             {data: 'email', name: 'email', className: 'dt-page',},
             {data: 'href', name: 'href'},
@@ -42,7 +43,7 @@ $(document).ready(function () {
             },
         ],
         initComplete: function () {
-            this.api().columns([0, 1, 2, 3, 4]).every(function (colIdx) {
+            this.api().columns([0, 1, 2, 3, 4, 5]).every(function (colIdx) {
                 let that = this;
                 $('input', this.header()).on('keyup change clear', function () {
                     if (that.search() !== this.value) {

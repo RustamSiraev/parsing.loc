@@ -235,7 +235,7 @@ class ParsingController
 
         //если ответ не 200, добавляем ссылку в массив битых ссылок $badLinks
         //и данные по этой ссылке в массив $badLinksArr
-        if (isset($code) && $code !== 200)
+        if (isset($code) && intval($code) >= 400)
         {
             $this->badLinks[] = $url;
             $data['error'] = true;

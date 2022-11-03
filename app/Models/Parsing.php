@@ -43,7 +43,7 @@ class Parsing extends Model
     {
         if (!$this->stop)
         {
-            return strtotime(now()) - strtotime($this->start);
+            return strtotime($this->updated_at) - strtotime($this->start);
         }
         return strtotime($this->stop) - strtotime($this->start);
     }

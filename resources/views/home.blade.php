@@ -28,6 +28,7 @@
                 <table class="table table-secondary table-bordered table-striped reports-datatable" style="width:100%">
                     <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Date</th>
                         <th>User</th>
                         <th>Site</th>

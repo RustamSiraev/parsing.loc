@@ -130,6 +130,8 @@ class ParsingController
                 $pqLink = pq($link); //создаем объект phpQueryObject
                 $href = $pqLink->attr('href');
 
+                $this->saveLog(parse_url($href)['host'] . ' - ' . $this->parseSiteUrl['host']);
+
                 if ($this->checkExceptions($href))
                 {
                     continue;
@@ -168,8 +170,6 @@ class ParsingController
                 $anchor = $this->getAnchor($pqLink);
 
                 $this->getData($href, $url, $anchor);
-
-                $this->saveLog(parse_url($href)['host'] . ' - ' . $this->parseSiteUrl['host']);
 
                 //если ссылка внутрення добавляем ее в массив $internalLinks для дальнейшей обработки
                 if (parse_url($href)['host'] == $this->parseSiteUrl['host'])

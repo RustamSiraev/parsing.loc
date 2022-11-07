@@ -42,7 +42,6 @@ class ParsingController
         $this->siteUrl = $parsing->href;
         $this->allLinks[] = $parsing->href;
         $this->internalLinks[] = $parsing->href;
-        $this->internalLinks[] = $parsing->href;
         $this->parseSiteUrl = parse_url($parsing->href);
         $this->iterations = self::ITERATIONS_LIMIT;
 
@@ -131,8 +130,6 @@ class ParsingController
                 $pqLink = pq($link); //создаем объект phpQueryObject
                 $href = $pqLink->attr('href');
 
-                $this->saveLog(parse_url($href)['host'] . ' - ' . $this->parseSiteUrl['host']);
-
                 if ($this->checkExceptions($href))
                 {
                     continue;
@@ -196,7 +193,7 @@ class ParsingController
      */
     protected function getData(string $url, string $parent = '', string $anchor = ''): array
     {
-        $this->saveLog($url);
+        //$this->saveLog($url);
 
         if (!empty($this->parsing)) {
             if ($this->parsing->findOrFail($this->parsing->id)->end)

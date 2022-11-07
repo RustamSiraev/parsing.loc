@@ -233,9 +233,9 @@ class ParsingController
         $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        //если ответ не 200, добавляем ссылку в массив битых ссылок $badLinks
+        //если ответ больше 400, добавляем ссылку в массив битых ссылок $badLinks
         //и данные по этой ссылке в массив $badLinksArr
-        if (isset($code) && intval($code) >= 400)
+        if (isset($code) && intval($code) > 400)
         {
             $this->badLinks[] = $url;
             $data['error'] = true;

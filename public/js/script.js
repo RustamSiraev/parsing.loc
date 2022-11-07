@@ -68,7 +68,7 @@ $(document).ready(function () {
 
     $(document).on('click', '#submit-button', function () {
         let site = $("#site").val().trim();
-        if (!isValidURL(site)) {
+        if (0) {
             alert('This webpage is not available.');
             return false;
         } else {

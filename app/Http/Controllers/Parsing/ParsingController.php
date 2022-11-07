@@ -194,7 +194,7 @@ class ParsingController
     protected function getData(string $url, string $parent = '', string $anchor = ''): array
     {
         //$this->saveLog($url);
-
+        sleep(1);
         if (!empty($this->parsing)) {
             if ($this->parsing->findOrFail($this->parsing->id)->end)
                 exit;

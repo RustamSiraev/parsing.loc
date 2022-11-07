@@ -25,6 +25,11 @@ class HomeController extends ParsingController
         $this->parsing = $parsing;
     }
 
+    public function test(): Factory|View|Application
+    {
+        return view('test');
+    }
+
     public function index(): Factory|View|Application
     {
         return view('home');

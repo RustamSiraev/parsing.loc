@@ -71,6 +71,8 @@ Route::middleware('web')->group(function ()
             });
         });
 
+        Route::get('/test', [HomeController::class, 'test'])->name('test');
+
         Route::get('/', [HomeController::class, 'index'])->name('home');
         Route::get('/start', [HomeController::class, 'start'])->name('start');
         Route::get('/parsing', [HomeController::class, 'parsing'])->name('parsing');

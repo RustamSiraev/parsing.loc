@@ -42,6 +42,7 @@ class ParsingController
         $this->siteUrl = $parsing->href;
         $this->allLinks[] = $parsing->href;
         $this->internalLinks[] = $parsing->href;
+        $this->internalLinks[] = $parsing->href;
         $this->parseSiteUrl = parse_url($parsing->href);
         $this->iterations = self::ITERATIONS_LIMIT;
 

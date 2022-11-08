@@ -66,7 +66,8 @@ $(document).ready(function () {
     let timer;
     let timer2;
 
-    $(document).on('click', '#submit-button', function () {
+    $(document).on('click', '#submit-button', function (event) {
+        event.preventDefault();
         let site = $("#site").val().trim();
         if (0) {
             alert('This webpage is not available.');

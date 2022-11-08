@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <form method="get" id="parsing-form" action="{{ route('start') }}" enctype="multipart/form-data">
+    <form method="get" id="parsing-form" action="{{ route('start') }}">
         <div class="search-form mb-4">
             <div class="row">
                 <div class="col-md-4">

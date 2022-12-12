@@ -5,15 +5,16 @@ namespace App\Http\Controllers\Parsing;
 use App\Models\Parsing;
 use App\Models\Result;
 use Exception;
-use Symfony\Component\DomCrawler\Crawler;
+use Illuminate\Http\Request;
 use phpQuery;
 use phpQueryObject;
+use Symfony\Component\DomCrawler\Crawler;
 
 require_once 'phpQuery/phpQuery/phpQuery.php';
 
 set_time_limit(0);
 
-class ParsingController
+class ParsingController2
 {
     const ITERATIONS_LIMIT = 5000;
     const EXCEPTIONS_FILE = 'logs/exceptions.txt';
@@ -22,7 +23,6 @@ class ParsingController
     private string $siteUrl;
     private array $internalLinks = array();
     private array $badLinks = array();
-    private array $allLinks = array();
     private array $checkedLinks = array();
     private int $iterations;
     private array $parseSiteUrl;
@@ -38,7 +38,6 @@ class ParsingController
     {
         $this->parsing = $parsing;
         $this->siteUrl = $parsing->href;
-        $this->allLinks[] = $parsing->href;
         $this->internalLinks[] = $parsing->href;
         $this->parseSiteUrl = parse_url($parsing->href);
         $this->iterations = self::ITERATIONS_LIMIT;
@@ -58,7 +57,7 @@ class ParsingController
             } catch (Exception $e)
             {
                 $sleepTime = 7;
-                echo "Sleeping $sleepTime... ";
+                echo $e->getMessage() . ". Sleeping $sleepTime... ";
                 sleep($sleepTime);
                 $this->parseLink($url);
             }
@@ -69,7 +68,7 @@ class ParsingController
 
         $this->parsing->update(
             [
-                'checked' => count($this->allLinks),
+                'checked' => count($this->checkedLinks),
                 'broken' => count($this->badLinks),
                 'stop' => now(),
                 'end' => true
@@ -116,8 +115,6 @@ class ParsingController
      */
     protected function parseLink(string $url)
     {
-        $url = trim($url);
-
         if (!in_array($url, $this->badLinks))
         {
             $data = $this->getData($url, $url)['data'];
@@ -157,76 +154,6 @@ class ParsingController
         }
     }
 
-    protected function parseLink_(string $url)
-    {
-        $url = trim($url);
-
-        if (!in_array($url, $this->badLinks))
-        {
-            $parseSiteUrl = parse_url($url);
-            $data = $this->getData($url, $url)['data'];
-            $document = phpQuery::newDocument($data);
-            $links = $document->find('a'); //ищем все ссылки на странице
-
-            foreach ($links as $link)
-            {
-                $pqLink = pq($link); //создаем объект phpQueryObject
-                $href = $pqLink->attr('href');
-
-                if ($this->checkExceptions($href))
-                {
-                    continue;
-                }
-
-                if (!preg_match('#^https?://#i', $href))
-                {
-                    if (str_starts_with($href, '//vk.com/video_ext'))
-                    {
-                        $href = 'https:' . $href;
-                    }
-                    elseif (str_starts_with($href, '/'))
-                    {
-                        $href = $parseSiteUrl['scheme'] . '://' . $parseSiteUrl['host'] . $href;
-                    }
-                    elseif (str_starts_with($href, './'))
-                    {
-                        $trimUrl = $url;
-                        if (mb_substr($url, -1) != '/')
-                            $trimUrl = strrev(strstr(strrev($url), '/'));
-
-                        $href = $trimUrl . ltrim($href, './');
-                    }
-                    else
-                    {
-                        $href = rtrim($this->siteUrl, '/') . '/' . $href;
-                    }
-                }
-
-                //пропускаем если ссылка уже была обработана
-                if (in_array($href, $this->internalLinks) || in_array($href, $this->checkedLinks) || in_array($href, $this->badLinks))
-                {
-                    continue;
-                }
-
-                $anchor = $this->getAnchor($pqLink);
-
-                $this->getData($href, $url, $anchor);
-
-                //если ссылка внутрення добавляем ее в массив $internalLinks для дальнейшей обработки
-                if (parse_url($href)['host'] == $this->parseSiteUrl['host'])
-                {
-                    $this->internalLinks[] = $href;
-                }
-                //иначе добавляем ее в массив проверенных ссылок $checkedLinks
-                else
-                {
-                    if (!in_array($href, $this->badLinks))
-                        $this->checkedLinks[] = $href;
-                }
-            }
-        }
-    }
-
     /**
      * Проверка ссылки
      * @param string $url
@@ -236,20 +163,7 @@ class ParsingController
      */
     protected function getData(string $url, string $parent = '', string $anchor = ''): array
     {
-        $url = trim($url);
-
-        //$this->saveLog('parent - ' . $parent);
-        //$this->saveLog($url);
-
-        if (!empty($this->parsing)) {
-            if ($this->parsing->findOrFail($this->parsing->id)->end)
-                exit;
-        }
-
-        if (!in_array($url, $this->allLinks))
-        {
-            $this->allLinks[] = $url;
-        }
+        $this->saveLog($url);
         $curl = curl_init();
         $header[0] = "Accept: text/xml,application/xml,application/xhtml+xml,";
         $header[0] .= "text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5";
@@ -279,50 +193,32 @@ class ParsingController
         $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        //если ответ больше 400, добавляем ссылку в массив битых ссылок $badLinks
+        //если ответ не 200, добавляем ссылку в массив битых ссылок $badLinks
         //и данные по этой ссылке в массив $badLinksArr
-        if ((isset($code) && intval($code) > 400) || !$code)
+        if (isset($code) && $code !== 200)
         {
             $this->badLinks[] = $url;
             $data['error'] = true;
 
-            if (!empty($this->parsing)) {
-                Result::create([
-                    'parsing_id' => $this->parsing->id,
-                    'href' => $url,
-                    'code' => $code != 0 ? $code : 'bad host',
-                    'parent' => $parent,
-                    'anchor' => $anchor,
-                ]);
-            }
+            Result::create([
+                'parsing_id' => $this->parsing->id,
+                'href' => $url,
+                'code' => $code != 0 ? $code : 'bad host',
+                'parent' => $parent,
+                'anchor' => $anchor,
+            ]);
         }
 
         if (!empty($this->parsing)) {
             $this->parsing->update(
                 [
-                    'checked' => count($this->allLinks),
+                    'checked' => count($this->checkedLinks),
                     'broken' => count($this->badLinks),
                     'stop' => now(),
                 ]
             );
         }
         return $data;
-    }
-
-    /**
-     * Получение анкор ссылки
-     * текст или название первого атрибута
-     * @param phpQueryObject $pqLink
-     * @return string
-     */
-    protected function getAnchor_(phpQueryObject $pqLink): string
-    {
-        $text = trim($pqLink->text());
-        if ($text)
-        {
-            return $text;
-        }
-        return mb_substr(trim($pqLink->html()), 1, stripos(trim($pqLink->html()), ' '));
     }
 
     /**
@@ -370,13 +266,14 @@ class ParsingController
      */
     protected function checkExceptions(string $url = null): bool
     {
+        $link = str_replace($this->siteUrl, '', $url);
         if (!$url
-            || str_starts_with($url, 'mailto')
-            || str_starts_with($url, '#')
-            || str_starts_with($url, 'viber')
-            || str_starts_with($url, 'skype')
-            || str_starts_with($url, 'javascript:')
-            || str_starts_with($url, 'tel'))
+            || str_starts_with($link, 'mailto')
+            || str_starts_with($link, '#')
+            || str_starts_with($link, 'viber')
+            || str_starts_with($link, 'skype')
+            || str_starts_with($link, 'javascript:')
+            || str_starts_with($link, 'tel'))
         {
             return true;
         }
@@ -392,5 +289,48 @@ class ParsingController
         }
 
         return false;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param \App\Models\Parsing $parsing
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Parsing $parsing)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param \App\Models\Parsing $parsing
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Parsing $parsing)
+    {
+        //
     }
 }

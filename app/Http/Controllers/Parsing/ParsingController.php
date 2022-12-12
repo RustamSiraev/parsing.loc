@@ -118,6 +118,8 @@ class ParsingController
      */
     protected function parseLink(string $url)
     {
+        $url = trim($url);
+
         if (!in_array($url, $this->badLinks))
         {
             $parseSiteUrl = parse_url($url);
@@ -193,6 +195,9 @@ class ParsingController
      */
     protected function getData(string $url, string $parent = '', string $anchor = ''): array
     {
+        $url = trim($url);
+
+        //$this->saveLog('parent - ' . $parent);
         //$this->saveLog($url);
 
         if (!empty($this->parsing)) {

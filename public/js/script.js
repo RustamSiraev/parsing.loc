@@ -10,13 +10,16 @@ $(document).ready(function () {
     });
 
     $('.reports-datatable thead th').each(function (index) {
-        if (index < 6) {
+        if (index < 3) {
             const title = $('.reports-datatable thead th').eq($(this).index()).text();
             $(this).html('<input type="text" placeholder="' + title + '" />');
         }
     });
     const reportsTable = $('.reports-datatable').DataTable({
         responsive: true,
+        language: {
+            url: '/js/ru.json'
+        },
         scrollX: true,
         scrollY: true,
         processing: true,
@@ -28,22 +31,21 @@ $(document).ready(function () {
             [5, 10, 25, 50, 'All'],
         ],
         columns: [
-            {data: 'id', name: 'id', className: 'dt-id',},
-            {data: 'date', name: 'date', className: 'dt-page',},
-            {data: 'email', name: 'email', className: 'dt-page',},
+            {data: 'id', name: 'id', className: 'dt-id'},
+            {data: 'date', name: 'date', className: 'dt-page'},
             {data: 'href', name: 'href'},
-            {data: 'time', name: 'time', className: 'dt-page',},
-            {data: 'checked', name: 'checked', className: 'dt-page',},
-            {data: 'broken', name: 'broken', className: 'dt-page',},
+            {data: 'time', name: 'time', className: 'dt-page'},
+            {data: 'checked', name: 'checked', className: 'dt-page'},
+            {data: 'broken', name: 'broken', className: 'dt-page'},
             {
                 data: 'action',
                 name: 'action',
                 orderable: false,
-                searchable: false
+                searchable: false,
             },
         ],
         initComplete: function () {
-            this.api().columns([0, 1, 2, 3, 4, 5]).every(function (colIdx) {
+            this.api().columns([0, 1, 2]).every(function (colIdx) {
                 let that = this;
                 $('input', this.header()).on('keyup change clear', function () {
                     if (that.search() !== this.value) {
@@ -56,6 +58,14 @@ $(document).ready(function () {
                     e.stopPropagation();
                 });
             });
+
+            if (document.getElementById('button-kill')) {
+                reportsTable.ajax.reload();
+                timer2 = setInterval(() => reportsTable.ajax.reload(), 2000);
+            } else {
+                $('.loading').hide();
+                clearInterval(timer2);
+            }
         }
     });
 
@@ -68,7 +78,8 @@ $(document).ready(function () {
 
     $(document).on('click', '#submit-button', function (event) {
         event.preventDefault();
-        let site = $("#site").val().trim();
+        let site = $("#site").val().trim(),
+            all_pages = $("#all_pages").prop('checked') ? 1 : 0;
         if (0) {
             alert('This webpage is not available.');
             return false;
@@ -80,10 +91,10 @@ $(document).ready(function () {
                 url: "/start",
                 data: {
                     'site': site,
+                    'all_pages': all_pages,
                 },
                 beforeSend: function () {
                     $('#result').show();
-                    $('.loading').show();
                     if (!$("#result-table").find('.dataTables_wrapper')) {
                         $('#result .report-datatable thead th').each(function () {
                             const title = $('#result .report-datatable thead th').eq($(this).index()).text();
@@ -96,12 +107,15 @@ $(document).ready(function () {
                 success: function (res) {
                     if (res.error) {
                         $('#result').hide();
-                        $('.loading').hide();
                         alert(res.error);
+                        document.getElementById('submit-button').disabled = false;
                         return false;
                     } else {
                         const resultTable = $('#result .report-datatable').DataTable({
                             responsive: true,
+                            language: {
+                                url: '/js/ru.json'
+                            },
                             scrollX: true,
                             scrollY: true,
                             processing: true,
@@ -129,7 +143,6 @@ $(document).ready(function () {
                                 });
                             }
                         });
-                        document.getElementById('button-kill').dataset.id = res;
                         reportsTable.ajax.reload();
                         timer = setInterval(() => resultTable.ajax.reload(), 2000);
                         timer2 = setInterval(() => reportsTable.ajax.reload(), 4000);
@@ -145,15 +158,15 @@ $(document).ready(function () {
                                 reportsTable.ajax.reload();
                             },
                             success: function (data) {
+                                document.getElementById('submit-button').disabled = false;
                                 if (data.error) {
                                     alert(data.error);
                                 }
+                                $('.loading').hide();
                                 clearInterval(timer);
                                 clearInterval(timer2);
                                 resultTable.ajax.reload();
                                 reportsTable.ajax.reload();
-                                $('.loading').hide();
-                                document.getElementById('submit-button').disabled = false;
                             }
                         });
                     }
@@ -170,6 +183,9 @@ $(document).ready(function () {
 
         const resultTable = $('#report .report-datatable').DataTable({
             responsive: true,
+            language: {
+                url: '/js/ru.json'
+            },
             scrollX: true,
             scrollY: true,
             processing: true,
@@ -200,6 +216,7 @@ $(document).ready(function () {
     }
 
     $(document).on('click', '.button-trash', function (e) {
+        event.preventDefault();
         let id = e.target.dataset.id;
         $.ajax({
             type: "GET",
@@ -217,6 +234,7 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.button-kill', function (e) {
+        event.preventDefault();
         let id = e.target.dataset.id;
         $.ajax({
             type: "GET",
@@ -227,10 +245,10 @@ $(document).ready(function () {
                 if (data.error) {
                     alert(data.error);
                 } else {
+                    $('.loading').hide();
                     clearInterval(timer);
                     clearInterval(timer2);
                     reportsTable.ajax.reload();
-                    $('.loading').hide();
                     document.getElementById('submit-button').disabled = false;
                 }
             }

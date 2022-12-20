@@ -124,6 +124,10 @@ button i {
     max-width: 120px !important;
 }
 
+.dt-actions {
+    max-width: 140px !important;
+}
+
 th input {
     max-width: 100% !important;
 }
@@ -213,7 +217,7 @@ tbody > tr:hover {
     position: absolute;
     z-index: 10;
     margin-left: 30%;
-    display: none;
+    display: block;
 }
 
 #result {
@@ -225,8 +229,8 @@ tbody > tr:hover {
 }
 
 .half-circle-spinner {
-    width: 100px;
-    height: 100px;
+    width: 48px;
+    height: 48px;
     margin: 0;
     border-radius: 100%;
     position: relative;
@@ -285,11 +289,13 @@ tbody > tr:hover {
     background-position: center;
     display: block;
     line-height: normal;
-    height: 100px;
-    width: 100px;
+    height: 40px;
+    width: 40px;
     color: #941a1a;
     text-decoration: none;
     text-align: right;
     z-index: 1000;
     position: absolute;
+    margin-top: 4px;
+    margin-left: 4px;
 }

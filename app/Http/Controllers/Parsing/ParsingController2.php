@@ -273,6 +273,7 @@ class ParsingController2
             || str_starts_with($link, 'viber')
             || str_starts_with($link, 'skype')
             || str_starts_with($link, 'javascript:')
+            || str_starts_with($url, 'https://bitbucket')
             || str_starts_with($link, 'tel'))
         {
             return true;

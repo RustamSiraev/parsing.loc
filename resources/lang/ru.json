@@ -334,5 +334,20 @@
     "Password has been update successfully": "Пароль изменен",
     "You cannot delete the administrator account": "Нельзя удалить учетную запись администратора",
     "The account is inactive": "Аккаунт неактивен",
-    "You have registered successfully": "Вы успешно зарегистрировались"
+    "You have registered successfully": "Вы успешно зарегистрировались",
+    "Checks": "Проверки",
+    "Enter your URL": "Введите URL-адрес",
+    "Find broken links": "Найти битые ссылки",
+    "Checker history": "История проверок",
+    "Date": "Дата",
+    "Site": "Сайт",
+    "Time": "Время проверки",
+    "Checked links, pcs": "Проверено ссылок, шт",
+    "Broken links, pcs": "Битые ссылки, шт",
+    "Checker result": "Результат проверки",
+    "Broken link": "Битые ссылки",
+    "Link Text": "Текст ссылки",
+    "Page where found": "Страница, где найдено",
+    "Server response": "Ответ сервера",
+    "Look for a broken link on other pages": "Искать битую ссылку на других страницах"
 }

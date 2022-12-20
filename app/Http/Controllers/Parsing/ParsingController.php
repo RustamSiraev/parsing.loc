@@ -118,15 +118,32 @@ class ParsingController
     {
         $url = trim($url);
 
-        if (!in_array($url, $this->badLinks))
+        if (!in_array($url, $this->badLinks)
+            && !in_array($url, $this->internalLinks)
+            && !$this->checkExceptions($url))
         {
             $data = $this->getData($url, $url)['data'];
 
             $crawler = new Crawler(null, $url);
             $crawler->addHtmlContent($data, 'UTF-8');
 
-            $crawler->filter('a')->each(function (Crawler $node) use ($url) {
+            $crawler->filter('a')->each(function (Crawler $node) use ($url)
+            {
+                if ($this->checkExceptions($node->attr('href')))
+                {
+                    return;
+                }
+
                 $href = $node->link()->getUri();
+
+                if (str_starts_with($href, '/'))
+                {
+                    $trimUrl = $url;
+                    if (str_ends_with ($url, '/'))
+                        $trimUrl = substr($url,0,-1);
+
+                    $href = $trimUrl . ltrim($href, '/');
+                }
 
                 if ($this->checkExceptions($href))
                 {
@@ -134,7 +151,14 @@ class ParsingController
                 }
 
                 //пропускаем если ссылка уже была обработана
-                if (in_array($href, $this->internalLinks) || in_array($href, $this->checkedLinks) || in_array($href, $this->badLinks))
+                if (in_array($href, $this->internalLinks) || in_array($href, $this->checkedLinks))
+                {
+                    return;
+                }
+
+                //пропускаем если ссылка уже добавлена в массив битых ссылок
+                //и выбрана соответсвующая опция
+                if (in_array($href, $this->badLinks) && !$this->parsing->all_pages)
                 {
                     return;
                 }
@@ -238,10 +262,10 @@ class ParsingController
     {
         $url = trim($url);
 
-        //$this->saveLog('parent - ' . $parent);
         //$this->saveLog($url);
 
-        if (!empty($this->parsing)) {
+        if (!empty($this->parsing))
+        {
             if ($this->parsing->findOrFail($this->parsing->id)->end)
                 exit;
         }
@@ -283,10 +307,12 @@ class ParsingController
         //и данные по этой ссылке в массив $badLinksArr
         if ((isset($code) && intval($code) > 400) || !$code)
         {
+
             $this->badLinks[] = $url;
             $data['error'] = true;
 
-            if (!empty($this->parsing)) {
+            if (!empty($this->parsing))
+            {
                 Result::create([
                     'parsing_id' => $this->parsing->id,
                     'href' => $url,
@@ -297,7 +323,8 @@ class ParsingController
             }
         }
 
-        if (!empty($this->parsing)) {
+        if (!empty($this->parsing))
+        {
             $this->parsing->update(
                 [
                     'checked' => count($this->allLinks),
@@ -373,9 +400,13 @@ class ParsingController
         if (!$url
             || str_starts_with($url, 'mailto')
             || str_starts_with($url, '#')
+            || str_starts_with($url, '?')
             || str_starts_with($url, 'viber')
             || str_starts_with($url, 'skype')
             || str_starts_with($url, 'javascript:')
+            || str_starts_with($url, 'https://bitbucket')
+            || str_starts_with($url, 'http://fortawesome')
+            || str_starts_with($url, 'callto')
             || str_starts_with($url, 'tel'))
         {
             return true;

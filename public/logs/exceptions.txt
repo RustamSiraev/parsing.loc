@@ -10,3 +10,6 @@ connect.mail.ru
 api.whatsapp.com
 telegram.me/share
 twitter.com/share
+bitbucket
+callto
+fortawesome

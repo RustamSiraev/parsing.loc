@@ -27,6 +27,7 @@ class Parsing extends Model
         'checked',
         'broken',
         'pid',
+        'all_pages',
     ];
 
     public function user(): BelongsTo

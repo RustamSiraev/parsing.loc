@@ -35,9 +35,10 @@ class HomeController extends ParsingController
         return view('home');
     }
 
-    public function start(Request $request): JsonResponse
+    public function start(Request $request)
     {
         $site = $this->getData($request->all()['site']);
+        $params = $request->all()['all_pages'];
 
         if ($site['data'] && empty($site['error']))
         {
@@ -45,6 +46,7 @@ class HomeController extends ParsingController
                 'href' => $site['url'],
                 'start' => now(),
                 'user_id' => auth()->user()->id,
+                'all_pages' => $params,
             ]);
 
             return response()->json($parsing->id);
@@ -74,7 +76,8 @@ class HomeController extends ParsingController
         {
             $data = $this->parsing->getAll();
 
-            if ($request->all()['id']) {
+            if ($request->all()['id'])
+            {
                 $data = $this->parsing->getAll($request->all()['id']);
             }
 
@@ -88,8 +91,22 @@ class HomeController extends ParsingController
                 ->addIndexColumn()
                 ->addColumn('action', function ($row)
                 {
-                    return '<a href="/parsing/' . $row->id . '/show" target="_blank"><i class="bi bi-eye"></i></a>
+                    if ($row->end)
+                    {
+                        $buttons = '<a href="/parsing/' . $row->id . '/show" target="_blank"><i class="bi bi-eye"></i></a>
                             <a href="#" data-id="' . $row->id . '" class="button-trash"><i class="bi bi-trash" data-id="' . $row->id . '"></i></a>';
+                    }
+                    else
+                    {
+                        $buttons = '<div style="width: 140px;">
+                                        <a href="#" class="button-kill" id="button-kill" data-id="' . $row->id . '"></a>
+                                        <div class="half-circle-spinner">
+                                            <div class="circle circle-1"></div>
+                                            <div class="circle circle-2"></div>
+                                        </div>
+                                    </div>';
+                    }
+                    return $buttons;
                 })
                 ->rawColumns(['action'])
                 ->make(true);

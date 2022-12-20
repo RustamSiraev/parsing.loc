@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('end')->default(false);
             $table->integer('checked')->nullable();
             $table->integer('broken')->nullable();
+            $table->boolean('all_pages')->default(false);
             $table->timestamps();
 
             // внешний ключ, ссылается на поле id таблицы users

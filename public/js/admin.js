@@ -8,6 +8,9 @@ $(document).ready(function () {
 
     var usersTable = $('.user-datatable').DataTable({
         responsive: true,
+        language: {
+            url: '/js/ru.json'
+        },
         scrollX: true,
         processing: true,
         serverSide: false,

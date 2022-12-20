@@ -4,10 +4,10 @@
             <table class="table table-secondary table-bordered table-striped report-datatable" style="width:100%">
                 <thead>
                 <tr>
-                    <th>Broken link</th>
-                    <th>Link Text</th>
-                    <th>Page where found</th>
-                    <th>Server response</th>
+                    <th>Битые ссылки</th>
+                    <th>Текст ссылки</th>
+                    <th>Страница, где найдено</th>
+                    <th>Ответ сервера</th>
                 </tr>
                 </thead>
             </table>

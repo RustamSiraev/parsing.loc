@@ -6,10 +6,6 @@ use App\Models\Parsing;
 use App\Models\Result;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
-use phpQuery;
-use phpQueryObject;
-
-require_once 'phpQuery/phpQuery/phpQuery.php';
 
 set_time_limit(0);
 
@@ -19,7 +15,6 @@ class ParsingController
     const EXCEPTIONS_FILE = 'logs/exceptions.txt';
     const USER_AGENTS_FILE = 'logs/user_agents.txt';
 
-    private string $siteUrl;
     private array $internalLinks = array();
     private array $badLinks = array();
     private array $allLinks = array();
@@ -32,12 +27,13 @@ class ParsingController
      * Получение и исключение URL-адреса из массива $internalLinks,
      * добавление адреса в массив проверенных URL-адресов,
      * если ссылка не битая (на случай повтора этой ссылки)
+     * @param Parsing $parsing
      * @param int $sleep
+     * @return bool
      */
     public function runParser(Parsing $parsing, int $sleep = 0)
     {
         $this->parsing = $parsing;
-        $this->siteUrl = $parsing->href;
         $this->allLinks[] = $parsing->href;
         $this->internalLinks[] = $parsing->href;
         $this->parseSiteUrl = parse_url($parsing->href);
@@ -136,12 +132,18 @@ class ParsingController
 
                 $href = $node->link()->getUri();
 
+                $parseSiteUrl = parse_url($url);
+                $trimUrl = $parseSiteUrl['scheme'] . '://' . $parseSiteUrl['host'];
+                if (mb_substr($trimUrl, -1) != '/')
+                    $trimUrl = $trimUrl . '/';
+
+                if (str_starts_with($node->attr('href'), '/./'))
+                {
+                    $href = $trimUrl . ltrim($node->attr('href'), '/./');
+                }
+
                 if (str_starts_with($href, '/'))
                 {
-                    $trimUrl = $url;
-                    if (str_ends_with ($url, '/'))
-                        $trimUrl = substr($url,0,-1);
-
                     $href = $trimUrl . ltrim($href, '/');
                 }
 
@@ -178,76 +180,6 @@ class ParsingController
                         $this->checkedLinks[] = $href;
                 }
             });
-        }
-    }
-
-    protected function parseLink_(string $url)
-    {
-        $url = trim($url);
-
-        if (!in_array($url, $this->badLinks))
-        {
-            $parseSiteUrl = parse_url($url);
-            $data = $this->getData($url, $url)['data'];
-            $document = phpQuery::newDocument($data);
-            $links = $document->find('a'); //ищем все ссылки на странице
-
-            foreach ($links as $link)
-            {
-                $pqLink = pq($link); //создаем объект phpQueryObject
-                $href = $pqLink->attr('href');
-
-                if ($this->checkExceptions($href))
-                {
-                    continue;
-                }
-
-                if (!preg_match('#^https?://#i', $href))
-                {
-                    if (str_starts_with($href, '//vk.com/video_ext'))
-                    {
-                        $href = 'https:' . $href;
-                    }
-                    elseif (str_starts_with($href, '/'))
-                    {
-                        $href = $parseSiteUrl['scheme'] . '://' . $parseSiteUrl['host'] . $href;
-                    }
-                    elseif (str_starts_with($href, './'))
-                    {
-                        $trimUrl = $url;
-                        if (mb_substr($url, -1) != '/')
-                            $trimUrl = strrev(strstr(strrev($url), '/'));
-
-                        $href = $trimUrl . ltrim($href, './');
-                    }
-                    else
-                    {
-                        $href = rtrim($this->siteUrl, '/') . '/' . $href;
-                    }
-                }
-
-                //пропускаем если ссылка уже была обработана
-                if (in_array($href, $this->internalLinks) || in_array($href, $this->checkedLinks) || in_array($href, $this->badLinks))
-                {
-                    continue;
-                }
-
-                $anchor = $this->getAnchor($pqLink);
-
-                $this->getData($href, $url, $anchor);
-
-                //если ссылка внутрення добавляем ее в массив $internalLinks для дальнейшей обработки
-                if (parse_url($href)['host'] == $this->parseSiteUrl['host'])
-                {
-                    $this->internalLinks[] = $href;
-                }
-                //иначе добавляем ее в массив проверенных ссылок $checkedLinks
-                else
-                {
-                    if (!in_array($href, $this->badLinks))
-                        $this->checkedLinks[] = $href;
-                }
-            }
         }
     }
 
@@ -334,22 +266,6 @@ class ParsingController
             );
         }
         return $data;
-    }
-
-    /**
-     * Получение анкор ссылки
-     * текст или название первого атрибута
-     * @param phpQueryObject $pqLink
-     * @return string
-     */
-    protected function getAnchor_(phpQueryObject $pqLink): string
-    {
-        $text = trim($pqLink->text());
-        if ($text)
-        {
-            return $text;
-        }
-        return mb_substr(trim($pqLink->html()), 1, stripos(trim($pqLink->html()), ' '));
     }
 
     /**
